@@ -3,10 +3,13 @@
  * API wrapper for Open Movie Database API (http://omdbapi.com/)
  * with responses for Slack slash commands
  *
+ *  @version v1.1.0
+ *  @license https://opensource.org/licenses/MIT
  *
- *  echo json_encode($iMDB->q('Shawshank redemption'));
- *
- *  v1.0.0
+ *  require 'IMDBBot.php';
+ *  use MartijnOud\IMDBBot;
+ *  $IMDBBot = new IMDBBot();
+ *  echo json_encode($IMDb->q('Shawshank redemption'));
  *
  */
 
@@ -75,7 +78,7 @@ class IMDBBot
 
                             array(
                                 "title" => "Rating",
-                                "value" => $item->imdbRating . "/10" . " (".$item->imdbVotes.")",
+                                "value" => ($item->imdbRating != "N/A" ? $item->imdbRating . "/10" : "N/A") . ($item->imdbVotes != "N/A" ? " (" . $item->imdbVotes . ")" : ""),
                                 "short" => true,
                             ),
 
