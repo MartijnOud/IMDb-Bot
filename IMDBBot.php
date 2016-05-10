@@ -3,19 +3,22 @@
  * API wrapper for Open Movie Database API (http://omdbapi.com/)
  * with responses for Slack slash commands
  *
- *  @version v1.1.0
+ *  @version v1.2.0
  *  @license https://opensource.org/licenses/MIT
  *
  *  require 'IMDBBot.php';
  *  use MartijnOud\IMDBBot;
  *  $IMDBBot = new IMDBBot();
- *  echo json_encode($IMDb->q('Shawshank redemption'));
+ *  echo json_encode($IMDBBot->q('Shawshank redemption'));
  *
  */
 
 namespace MartijnOud;
 class IMDBBot
 {
+
+    // Optional OMDb (poster) API key
+    private $apikey = null;
 
     /**
      * Uses the main OMDB API (?i= or ?t=)
@@ -29,8 +32,8 @@ class IMDBBot
         // Make URL proof
         $q = urlencode($q);
 
-        // Call API
         // Check if imdb ID or title
+        // Call API
         if (preg_match("/tt\\d{7}/", $q)) {
             $item = $this->call('http://omdbapi.com/?i='.$q);
         } else {
@@ -41,7 +44,7 @@ class IMDBBot
 
             $payload = array(
                 "response_type" => "in_channel",
-                "text" => "Sorry I didn't find anything!",
+                "text" => "Sorry I didn't find anything for _".urldecode($q)."_!",
             );
 
         } else {
@@ -54,7 +57,7 @@ class IMDBBot
                     array(
                         "title" => $item->Title . " (".$item->Year.")",
                         "title_link" => "http://www.imdb.com/title/".$item->imdbID."/",
-                        "thumb_url" => ($item->Poster != "N/A" ? $item->Poster : null),
+                        "thumb_url" => ((!empty($item->imdbID) AND !empty($this->apikey)) ? 'http://img.omdbapi.com/?i='.$item->imdbID.'&apikey='.$this->apikey : null),
                         "text" => $item->Plot,
 
                         "fields" => array(
